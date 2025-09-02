@@ -1,0 +1,18 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Box {
+  id        Int      @id @default(autoincrement())
+  boxNumber String   @unique
+  images    String?  // JSON array of image paths
+  items     String   // JSON string of items array
+  keywords  String   // Comma-separated keywords
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
