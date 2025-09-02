@@ -49,3 +49,15 @@ public/uploads/*
 # Database
 prisma/*.db
 prisma/*.db-journal
+
+# Production database
+data/
+*.db
+*.db-journal
+
+# Docker
+docker-compose.override.yml
+
+# Environment
+.env.production
+.env.local
