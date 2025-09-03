@@ -2,7 +2,10 @@ import { unlink, writeFile } from 'fs/promises';
 import { NextRequest, NextResponse } from 'next/server';
 import path from 'path';
 
+import { ImageOptimizer } from '@/lib/imageOptimizer';
 import { prisma } from '@/lib/prisma';
+
+const imageOptimizer = new ImageOptimizer();
 
 // GET single box
 export async function GET(
@@ -64,12 +67,25 @@ export async function PUT(
         const bytes = await image.arrayBuffer()
         const buffer = Buffer.from(bytes)
         
+        // Optimize the image
+        const optimized = await imageOptimizer.optimizeBuffer(buffer, {
+          maxSizeKB: 100,
+          quality: 85,
+          maxWidth: 1200,
+          maxHeight: 1200
+        })
+        
         // Create unique filename
         const filename = `${Date.now()}-${Math.random().toString(36).substring(7)}-${image.name}`
         const filepath = path.join(process.cwd(), 'public/uploads', filename)
         
-        await writeFile(filepath, buffer)
+        await writeFile(filepath, optimized.buffer)
         images.push(`/uploads/${filename}`)
+        
+        // Log optimization results
+        const originalKB = Math.round(optimized.originalSize / 1024)
+        const newKB = Math.round(optimized.newSize / 1024)
+        console.log(`Image optimized: ${image.name} - ${originalKB}KB → ${newKB}KB (${optimized.savings}% savings)`)
       }
     }
 

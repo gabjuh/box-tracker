@@ -44,6 +44,7 @@ next-env.d.ts
 
 # Uploads
 public/uploads/*
+public/uploads_backup/*
 !public/uploads/.gitkeep
 
 # Database
