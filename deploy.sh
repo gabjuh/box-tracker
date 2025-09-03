@@ -10,11 +10,11 @@ echo "📦 Building Docker image..."
 docker build -t box-tracker:latest .
 
 # Tag for Docker Hub (replace with your username)
-docker tag box-tracker:latest your-dockerhub-username/box-tracker:latest
+docker tag box-tracker:latest jjjjgabesz/box-tracker:latest
 
 # Push to Docker Hub
 echo "📤 Pushing to Docker Hub..."
-docker push your-dockerhub-username/box-tracker:latest
+docker push jjjjgabesz/box-tracker:latest
 
 echo "✅ Deployment complete!"
 echo "To deploy on RPi, run:"

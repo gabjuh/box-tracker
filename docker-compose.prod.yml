@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   box-tracker:
-    image: your-dockerhub-username/box-tracker:latest
+    image: jjjjgabesz/box-tracker:latest
     ports:
       - "3000:3000"
     volumes:
