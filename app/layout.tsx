@@ -24,9 +24,7 @@ export default function RootLayout({
               <Link href="/">Box Tracker</Link>
             </h1>
             <div className="space-x-4">
-              <Link href="/" className="hover:underline">Home</Link>
-              <a href="/add" className="hover:underline">Add Box</a>
-              <a href="/search" className="hover:underline">Search</a>
+              <a href="/add" className="hover:underline text-3xl">+</a>
             </div>
           </div>
         </nav>
