@@ -17,7 +17,7 @@ interface BoxCardProps {
   maxItems?: number
 }
 
-export default function BoxCard({ box, searchTerm = '', maxItems = 5 }: BoxCardProps) {
+export default function BoxCard({ box, searchTerm = '', maxItems = 15 }: BoxCardProps) {
   const parseItems = (items: string): string[] => {
     try {
       return JSON.parse(items)
@@ -52,8 +52,6 @@ export default function BoxCard({ box, searchTerm = '', maxItems = 5 }: BoxCardP
 
   const items = parseItems(box.items)
   const images = parseImages(box.images)
-  const displayItems = items.slice(0, maxItems)
-  const remainingCount = items.length - maxItems
 
   return (
     <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 shadow-md bg-white dark:bg-gray-800">
@@ -64,7 +62,7 @@ export default function BoxCard({ box, searchTerm = '', maxItems = 5 }: BoxCardP
         />
       </div>
       
-      <h3 className="font-bold text-lg mb-2 text-gray-900 dark:text-white">
+      <h3 className="font-bold text-xl mb-2 text-gray-900 dark:text-white">
         <Link 
           href={`/edit/${box.id}`}
           className="hover:text-blue-600 dark:hover:text-blue-400 hover:underline cursor-pointer"
@@ -76,7 +74,7 @@ export default function BoxCard({ box, searchTerm = '', maxItems = 5 }: BoxCardP
       <div className="mb-2">
         <h4 className="font-semibold text-sm text-gray-700 dark:text-gray-300">Items:</h4>
         <div className="flex flex-wrap gap-1 mt-1">
-          {displayItems.map((item, index) => (
+          {items.sort().map((item, index) => (
             <span 
               key={index}
               className="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded text-xs text-gray-800 dark:text-gray-200"
@@ -84,11 +82,6 @@ export default function BoxCard({ box, searchTerm = '', maxItems = 5 }: BoxCardP
               {searchTerm ? highlightMatch(item, searchTerm) : item}
             </span>
           ))}
-          {remainingCount > 0 && (
-            <span className="text-xs text-gray-500 dark:text-gray-400">
-              +{remainingCount} more
-            </span>
-          )}
         </div>
       </div>
       

@@ -14,7 +14,7 @@ export default function ImageCarousel({ images, boxNumber, className = '' }: Ima
 
   if (!images || images.length === 0) {
     return (
-      <div className={`w-full h-48 bg-gray-200 dark:bg-gray-600 rounded flex items-center justify-center ${className}`}>
+      <div className={`w-full h-[350px] bg-gray-200 dark:bg-gray-600 rounded flex items-center justify-center ${className}`}>
         <span className="text-gray-500 dark:text-gray-400">No images</span>
       </div>
     )
@@ -37,7 +37,7 @@ export default function ImageCarousel({ images, boxNumber, className = '' }: Ima
   }
 
   return (
-    <div className={`relative w-full h-48 ${className}`}>
+    <div className={`relative w-full h-[350px] ${className}`}>
       {/* Main Image */}
       <div className="relative w-full h-full overflow-hidden rounded">
         <Image
