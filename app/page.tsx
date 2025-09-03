@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 
 import BoxCard from '@/components/BoxCard';
+import PaginationControls from '@/components/PaginationControls';
 
 const PAGE_SIZES = [12, 24, 48, 'All'] as const;
 type PageSize = typeof PAGE_SIZES[number];
@@ -13,6 +14,11 @@ export default function Search() {
   const [searchTerm, setSearchTerm] = useState('')
   const [boxes, setBoxes] = useState<Box[]>([])
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc')
+  const [filteredBoxes, setFilteredBoxes] = useState<Box[]>([])
+  const [loading, setLoading] = useState(true)
+  const [pageSize, setPageSize] = useState<PageSize>(PAGE_SIZES[0]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [paginatedBoxes, setPaginatedBoxes] = useState<Box[]>();
 
   const handleSort = () => {
     console.log('runs')
@@ -23,8 +29,6 @@ export default function Search() {
     )
     setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')
   }
-  const [filteredBoxes, setFilteredBoxes] = useState<Box[]>([])
-  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     fetchBoxes()
@@ -51,8 +55,10 @@ export default function Search() {
     try {
       const response = await fetch('/api/boxes')
       const data = await response.json()
-      setBoxes(data)
-      setFilteredBoxes(data)
+      // Sort the initial data in ascending order by default
+      const sortedData = [...data].sort((a, b) => a.id - b.id)
+      setBoxes(sortedData)
+      setFilteredBoxes(sortedData)
     } catch (error) {
       console.error('Failed to fetch boxes:', error)
     } finally {
@@ -60,13 +66,8 @@ export default function Search() {
     }
   }
 
-  const [pageSize, setPageSize] = useState<PageSize>(PAGE_SIZES[0]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [paginatedBoxes, setPaginatedBoxes] = useState<Box[]>();
-
-  const handlePageSizeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const value = e.target.value === 'All' ? 'All' : Number(e.target.value) as PageSize;
-    setPageSize(value);
+  const handlePageSizeChange = (newPageSize: PageSize) => {
+    setPageSize(newPageSize);
     setCurrentPage(1);
   };
 
@@ -101,7 +102,8 @@ export default function Search() {
     <div>
       <h1 className="text-2xl font-bold mb-6 text-gray-900 dark:text-white">Search Boxes</h1>
       
-      <div className="mb-6">
+      {/* Search */}
+      <div className="mb-12">
         <div className="relative">
           <input
             type="text"
@@ -123,58 +125,17 @@ export default function Search() {
         </p>
       </div>
 
-      <div className="flex flex-col md:flex-row items-center justify-between mb-6 gap-4">
-        {/* Sort Button (Left) */}
-        <button
-          type="button"
-          onClick={handleSort}
-          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors w-full md:w-auto"
-        >
-          {sortOrder === 'asc' ? 'Descending' : 'Ascending'}
-        </button>
-
-        {/* Pagination (Center) */}
-        {pageSize !== 'All' && (
-          <div className="flex items-center gap-2 justify-center w-full md:w-auto">
-        <button
-          type="button"
-          onClick={handlePrevPage}
-          disabled={currentPage === 1}
-          className={`px-3 py-1 rounded ${currentPage === 1 ? 'bg-gray-300 dark:bg-gray-700 text-gray-500' : 'bg-blue-500 text-white hover:bg-blue-600'}`}
-        >
-          Prev
-        </button>
-        <span className="text-gray-700 dark:text-gray-300">
-          Page {currentPage} of {Math.max(1, Math.ceil(filteredBoxes.length / (pageSize as number)))}
-        </span>
-        <button
-          type="button"
-          onClick={handleNextPage}
-          disabled={currentPage >= Math.ceil(filteredBoxes.length / (pageSize as number))}
-          className={`px-3 py-1 rounded ${currentPage >= Math.ceil(filteredBoxes.length / (pageSize as number)) ? 'bg-gray-300 dark:bg-gray-700 text-gray-500' : 'bg-blue-500 text-white hover:bg-blue-600'}`}
-        >
-          Next
-        </button>
-          </div>
-        )}
-
-        {/* Page Size Select (Right) */}
-        <div className="w-full md:w-auto flex justify-end">
-          <label htmlFor="pageSize" className="mr-2 text-gray-700 dark:text-gray-300">Boxes per page:</label>
-          <select
-        id="pageSize"
-        value={pageSize}
-        onChange={handlePageSizeChange}
-        className="p-2 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
-          >
-        {PAGE_SIZES.map((size) => (
-          <option key={size} value={size}>
-            {size}
-          </option>
-        ))}
-          </select>
-        </div>
-      </div>
+      {/* Pagination Controls */}
+      <PaginationControls
+        sortOrder={sortOrder}
+        onSort={handleSort}
+        currentPage={currentPage}
+        totalItems={filteredBoxes.length}
+        pageSize={pageSize}
+        onPageSizeChange={handlePageSizeChange}
+        onPrevPage={handlePrevPage}
+        onNextPage={handleNextPage}
+      />
 
       {paginatedBoxes?.length === 0 ? (
         <div className="text-center py-8 text-gray-500 dark:text-gray-400">
@@ -185,8 +146,7 @@ export default function Search() {
           )}
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-
+        <div className="grid grid-cols-1 mb-12 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {paginatedBoxes?.map((box) => (
             <BoxCard 
               key={box.id} 
@@ -197,6 +157,19 @@ export default function Search() {
           ))}
         </div>
       )}
+
+      {/* Pagination Controls */}
+      <PaginationControls
+        sortOrder={sortOrder}
+        onSort={handleSort}
+        currentPage={currentPage}
+        totalItems={filteredBoxes.length}
+        pageSize={pageSize}
+        onPageSizeChange={handlePageSizeChange}
+        onPrevPage={handlePrevPage}
+        onNextPage={handleNextPage}
+      />
+
     </div>
   )
 }
