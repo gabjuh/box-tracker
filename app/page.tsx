@@ -21,7 +21,6 @@ export default function Search() {
   const [paginatedBoxes, setPaginatedBoxes] = useState<Box[]>();
 
   const handleSort = () => {
-    console.log('runs')
     setBoxes(prev =>
       [...prev].sort((a, b) =>
         sortOrder === 'asc' ? a.id - b.id : b.id - a.id
