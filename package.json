@@ -7,7 +7,8 @@
     "build": "next build --turbopack",
     "start": "next start",
     "lint": "eslint",
-    "backup-db": "bash backup-database.sh"
+    "backup-db": "bash backup-database.sh",
+    "optimize-images": "tsx scripts/optimize-existing-images.ts"
   },
   "dependencies": {
     "@prisma/client": "^6.15.0",
@@ -15,7 +16,8 @@
     "multer": "^2.0.2",
     "next": "15.5.2",
     "react": "19.1.0",
-    "react-dom": "19.1.0"
+    "react-dom": "19.1.0",
+    "sharp": "^0.34.3"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
@@ -27,6 +29,7 @@
     "eslint-config-next": "15.5.2",
     "prisma": "^6.15.0",
     "tailwindcss": "^4",
+    "tsx": "^4.20.5",
     "typescript": "^5"
   }
 }
