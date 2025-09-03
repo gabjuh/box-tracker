@@ -4,6 +4,9 @@ import { useEffect, useState } from 'react';
 
 import BoxCard from '@/components/BoxCard';
 
+const PAGE_SIZES = [12, 24, 48, 'All'] as const;
+type PageSize = typeof PAGE_SIZES[number];
+
 import type { Box } from '@/types';
 
 export default function Search() {
@@ -57,6 +60,39 @@ export default function Search() {
     }
   }
 
+  const [pageSize, setPageSize] = useState<PageSize>(PAGE_SIZES[0]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [paginatedBoxes, setPaginatedBoxes] = useState<Box[]>();
+
+  const handlePageSizeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = e.target.value === 'All' ? 'All' : Number(e.target.value) as PageSize;
+    setPageSize(value);
+    setCurrentPage(1);
+  };
+
+  const handlePrevPage = () => {
+    setCurrentPage((prev) => Math.max(prev - 1, 1));
+  };
+
+  const handleNextPage = () => {
+    const totalPages =
+      pageSize === 'All'
+        ? 1
+        : Math.ceil(filteredBoxes.length / (pageSize as number));
+    setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+  };
+
+  useEffect(() => {
+    const paginated =
+      pageSize === 'All'
+        ? filteredBoxes
+        : filteredBoxes.slice(
+            (currentPage - 1) * (pageSize as number),
+            currentPage * (pageSize as number)
+          );
+    setPaginatedBoxes(paginated);
+  }, [filteredBoxes, pageSize, currentPage]);
+
   if (loading) {
     return <div className="text-center py-8 text-gray-600 dark:text-gray-400">Loading boxes...</div>
   }
@@ -87,15 +123,60 @@ export default function Search() {
         </p>
       </div>
 
-      <button
-        type="button"
-        onClick={handleSort}
-        className="mb-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
-      >
-        {sortOrder === 'asc' ? 'Descending' : 'Ascending'}
-      </button>
+      <div className="flex flex-col md:flex-row items-center justify-between mb-6 gap-4">
+        {/* Sort Button (Left) */}
+        <button
+          type="button"
+          onClick={handleSort}
+          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors w-full md:w-auto"
+        >
+          {sortOrder === 'asc' ? 'Descending' : 'Ascending'}
+        </button>
 
-      {filteredBoxes.length === 0 ? (
+        {/* Pagination (Center) */}
+        {pageSize !== 'All' && (
+          <div className="flex items-center gap-2 justify-center w-full md:w-auto">
+        <button
+          type="button"
+          onClick={handlePrevPage}
+          disabled={currentPage === 1}
+          className={`px-3 py-1 rounded ${currentPage === 1 ? 'bg-gray-300 dark:bg-gray-700 text-gray-500' : 'bg-blue-500 text-white hover:bg-blue-600'}`}
+        >
+          Prev
+        </button>
+        <span className="text-gray-700 dark:text-gray-300">
+          Page {currentPage} of {Math.max(1, Math.ceil(filteredBoxes.length / (pageSize as number)))}
+        </span>
+        <button
+          type="button"
+          onClick={handleNextPage}
+          disabled={currentPage >= Math.ceil(filteredBoxes.length / (pageSize as number))}
+          className={`px-3 py-1 rounded ${currentPage >= Math.ceil(filteredBoxes.length / (pageSize as number)) ? 'bg-gray-300 dark:bg-gray-700 text-gray-500' : 'bg-blue-500 text-white hover:bg-blue-600'}`}
+        >
+          Next
+        </button>
+          </div>
+        )}
+
+        {/* Page Size Select (Right) */}
+        <div className="w-full md:w-auto flex justify-end">
+          <label htmlFor="pageSize" className="mr-2 text-gray-700 dark:text-gray-300">Boxes per page:</label>
+          <select
+        id="pageSize"
+        value={pageSize}
+        onChange={handlePageSizeChange}
+        className="p-2 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+          >
+        {PAGE_SIZES.map((size) => (
+          <option key={size} value={size}>
+            {size}
+          </option>
+        ))}
+          </select>
+        </div>
+      </div>
+
+      {paginatedBoxes?.length === 0 ? (
         <div className="text-center py-8 text-gray-500 dark:text-gray-400">
           {searchTerm ? (
             <>No boxes found matching {searchTerm}</>
@@ -106,7 +187,7 @@ export default function Search() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
-          {filteredBoxes.map((box) => (
+          {paginatedBoxes?.map((box) => (
             <BoxCard 
               key={box.id} 
               box={box}
