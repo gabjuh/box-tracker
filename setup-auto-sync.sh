@@ -7,7 +7,7 @@ echo "Setting up automatic Box Tracker sync..."
 
 # Get the current directory
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-SYNC_SCRIPT="$SCRIPT_DIR/sync-to-webserver.sh"
+SYNC_SCRIPT="$SCRIPT_DIR/backup-sync-to-webserver.sh"
 
 # Make sure sync script is executable
 chmod +x "$SYNC_SCRIPT"
@@ -19,7 +19,7 @@ mkdir -p "$SCRIPT_DIR/logs"
 cat > "$SCRIPT_DIR/cron-sync.sh" << EOF
 #!/bin/bash
 cd "$SCRIPT_DIR"
-./sync-to-webserver.sh >> "$SCRIPT_DIR/logs/sync.log" 2>&1
+./backup-sync-to-webserver.sh >> "$SCRIPT_DIR/logs/sync.log" 2>&1
 EOF
 
 chmod +x "$SCRIPT_DIR/cron-sync.sh"
@@ -63,4 +63,4 @@ echo "📝 Logs will be saved to: $SCRIPT_DIR/logs/sync.log"
 echo ""
 echo "To view current cron jobs: crontab -l"
 echo "To remove auto-sync: crontab -e (then delete the line)"
-echo "To test sync now: ./sync-to-webserver.sh"
+echo "To test sync now: ./backup-sync-to-webserver.sh"
