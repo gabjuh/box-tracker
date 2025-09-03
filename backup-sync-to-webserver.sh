@@ -38,14 +38,14 @@ rsync -avz --progress --delete "${LOCAL_UPLOADS_PATH}/" "${WEBSERVER_USER}@${WEB
 UPLOADS_STATUS=$?
 
 # Optional: Sync the entire project (useful for updates)
-if [ "${SYNC_PROJECT}" = "true" ]; then
-    echo "Syncing project files..."
-    rsync -avz --progress --exclude 'node_modules' --exclude '.git' --exclude 'data' --exclude 'public/uploads' \
-        "${LOCAL_PROJECT_PATH}/" "${WEBSERVER_USER}@${WEBSERVER_HOST}:${WEBSERVER_DEST_DIR}/"
-    PROJECT_STATUS=$?
-else
-    PROJECT_STATUS=0
-fi
+# if [ "${SYNC_PROJECT}" = "true" ]; then
+#     echo "Syncing project files..."
+#     rsync -avz --progress --exclude 'node_modules' --exclude '.git' --exclude 'data' --exclude 'public/uploads' \
+#         "${LOCAL_PROJECT_PATH}/" "${WEBSERVER_USER}@${WEBSERVER_HOST}:${WEBSERVER_DEST_DIR}/"
+#     PROJECT_STATUS=$?
+# else
+#     PROJECT_STATUS=0
+# fi
 
 # Check results and report
 if [ $DB_STATUS -eq 0 ] && [ $UPLOADS_STATUS -eq 0 ] && [ $PROJECT_STATUS -eq 0 ]; then
