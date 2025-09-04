@@ -13,7 +13,7 @@ import type { Box } from '@/types';
 export default function Search() {
   const [searchTerm, setSearchTerm] = useState('')
   const [boxes, setBoxes] = useState<Box[]>([])
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc')
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc')
   const [filteredBoxes, setFilteredBoxes] = useState<Box[]>([])
   const [loading, setLoading] = useState(true)
   const [pageSize, setPageSize] = useState<PageSize>(PAGE_SIZES[0]);
@@ -55,7 +55,7 @@ export default function Search() {
       const response = await fetch('/api/boxes')
       const data = await response.json()
       // Sort the initial data in ascending order by default
-      const sortedData = [...data].sort((a, b) => a.id - b.id)
+      const sortedData = [...data].sort((a, b) => b.id - a.id)
       setBoxes(sortedData)
       setFilteredBoxes(sortedData)
     } catch (error) {
