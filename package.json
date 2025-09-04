@@ -7,7 +7,7 @@
     "build": "next build --turbopack",
     "start": "next start",
     "lint": "eslint",
-    "backup-db": "bash backup-database.sh",
+    "backup-db": "bash backup-to-webserver.sh",
     "optimize-images": "tsx scripts/optimize-existing-images.ts"
   },
   "dependencies": {
