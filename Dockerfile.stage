@@ -18,8 +18,8 @@ RUN npx prisma generate
 # Create directories
 RUN mkdir -p public/uploads certs
 
-# Copy certificates if they exist
-COPY certs/ ./certs/ 2>/dev/null || true
+# Copy certificates if they exist (will be mounted via volume)
+# COPY certs/ ./certs/ 2>/dev/null || true
 
 # Expose both HTTP and HTTPS ports
 EXPOSE 3000

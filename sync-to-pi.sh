@@ -3,7 +3,7 @@
 # Simple sync script to copy project to Raspberry Pi
 
 RPI_HOST="${RPI_HOST:-gabor@192.168.178.31}"
-RPI_PATH="/home/gabor/Projects/box-tracker-dev"
+RPI_PATH="/home/gabor/Projects/box-tracker-stage"
 
 echo "📦 Syncing project to Pi..."
 
