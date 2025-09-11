@@ -5,10 +5,11 @@ interface ImageCarouselProps {
   images: string[];
   boxNumber: string;
   onImageClick?: (imageIndex: number) => void;
+  mainImageIndex?: number;
 }
 
-export default function ImageCarousel({ images, boxNumber, onImageClick }: ImageCarouselProps) {
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+export default function ImageCarousel({ images, boxNumber, onImageClick, mainImageIndex = 0 }: ImageCarouselProps) {
+  const [currentImageIndex, setCurrentImageIndex] = useState(mainImageIndex || 0);
 
   if (images.length === 0) {
     return (

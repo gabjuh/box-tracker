@@ -10,11 +10,12 @@ const imageOptimizer = new ImageOptimizer();
 // GET single box
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const box = await prisma.box.findUnique({
-      where: { id: parseInt(params.id) }
+      where: { id: parseInt(id) }
     })
     
     if (!box) {
@@ -30,32 +31,43 @@ export async function GET(
 // PUT update box
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const formData = await request.formData()
     const boxNumber = formData.get('boxNumber') as string
     const items = formData.get('items') as string
     const keywords = formData.get('keywords') as string
-    const keepExistingImages = formData.get('keepExistingImages') === 'true'
+    const mainImageIndex = parseInt(formData.get('mainImageIndex') as string) || 0
+    
+    // Parse image management data
+    const existingImagesStr = formData.get('existingImages') as string
+    const removedImagesStr = formData.get('removedImages') as string
+    const existingImages = existingImagesStr ? JSON.parse(existingImagesStr) : []
+    const removedImages = removedImagesStr ? JSON.parse(removedImagesStr) : []
 
     // Get current box to check existing images
     const currentBox = await prisma.box.findUnique({
-      where: { id: parseInt(params.id) }
+      where: { id: parseInt(id) }
     })
 
     if (!currentBox) {
       return NextResponse.json({ error: 'Box not found' }, { status: 404 })
     }
 
-    let images: string[] = []
+    // Start with existing images that weren't removed
+    let images: string[] = [...existingImages]
 
-    // Keep existing images if requested
-    if (keepExistingImages && currentBox.images) {
+    // Delete removed images from filesystem
+    for (const removedImagePath of removedImages) {
       try {
-        images = JSON.parse(currentBox.images)
-      } catch {
-        images = []
+        const filename = path.basename(removedImagePath)
+        const filepath = path.join(process.cwd(), 'public/uploads', filename)
+        await unlink(filepath)
+        console.log(`Deleted image: ${filename}`)
+      } catch (error) {
+        console.log(`Could not delete image: ${removedImagePath}`, error)
       }
     }
 
@@ -89,30 +101,15 @@ export async function PUT(
       }
     }
 
-    // If not keeping existing images, delete old ones
-    if (!keepExistingImages && currentBox.images) {
-      try {
-        const oldImages = JSON.parse(currentBox.images)
-        for (const oldImagePath of oldImages) {
-          try {
-            const fullPath = path.join(process.cwd(), 'public', oldImagePath)
-            await unlink(fullPath)
-          } catch (error) {
-            console.error('Failed to delete old image:', error)
-          }
-        }
-      } catch (error) {
-        console.error('Failed to parse old images:', error)
-      }
-    }
-
+    // Update the box in database
     const box = await prisma.box.update({
-      where: { id: parseInt(params.id) },
+      where: { id: parseInt(id) },
       data: {
         boxNumber,
         items,
         keywords,
-        images: images.length > 0 ? JSON.stringify(images) : null
+        images: images.length > 0 ? JSON.stringify(images) : null,
+        mainImageIndex
       }
     })
     
@@ -126,12 +123,14 @@ export async function PUT(
 // DELETE box
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
+    
     // Get current box to delete associated images
     const currentBox = await prisma.box.findUnique({
-      where: { id: parseInt(params.id) }
+      where: { id: parseInt(id) }
     })
 
     if (!currentBox) {
@@ -140,7 +139,7 @@ export async function DELETE(
 
     // Delete the box from database
     await prisma.box.delete({
-      where: { id: parseInt(params.id) }
+      where: { id: parseInt(id) }
     })
 
     // Delete associated image files if they exist

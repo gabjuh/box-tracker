@@ -4,5 +4,6 @@ export interface Box {
   images: string | null // JSON string array of image paths
   items: string
   keywords: string
+  mainImageIndex: number
   createdAt: string
 }

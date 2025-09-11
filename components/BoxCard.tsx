@@ -4,14 +4,7 @@ import { useState } from 'react';
 import FullscreenImageViewer from './FullscreenImageViewer';
 import ImageCarousel from './ImageCarousel';
 
-interface Box {
-  id: number
-  boxNumber: string
-  images: string | null
-  items: string
-  keywords: string
-  createdAt: string
-}
+import type { Box } from '@/types';
 
 interface BoxCardProps {
   box: Box
@@ -73,6 +66,7 @@ export default function BoxCard({ box, searchTerm = '', maxItems = 15 }: BoxCard
             images={images}
             boxNumber={box.boxNumber}
             onImageClick={handleImageClick}
+            mainImageIndex={box.mainImageIndex}
           />
         </div>
         <h3 className="font-bold text-xl mb-2 text-gray-900 dark:text-white">
@@ -96,11 +90,13 @@ export default function BoxCard({ box, searchTerm = '', maxItems = 15 }: BoxCard
             ))}
           </div>
         </div>
-        <div className="mb-2">
-          <h4 className="font-semibold text-sm text-gray-700 dark:text-gray-300">Keywords:</h4>
-          <p className="text-sm text-gray-600 dark:text-gray-400">
-            {searchTerm ? highlightMatch(box.keywords, searchTerm) : box.keywords}
-          </p>
+        <div className="mb-3">
+          <h4 className="font-semibold text-sm text-gray-700 dark:text-gray-300 mb-2">Zielraum:</h4>
+          <div className="inline-flex items-center">
+            <span className="bg-blue-500 text-white px-3 py-1.5 rounded-full text-sm font-medium shadow-sm">
+              📦 {searchTerm ? highlightMatch(box.keywords, searchTerm) : box.keywords}
+            </span>
+          </div>
         </div>
         <div className="text-xs text-gray-500 dark:text-gray-400">
           Added: {new Date(box.createdAt).toLocaleDateString()}
