@@ -1,0 +1,29 @@
+# Stage Dockerfile for RPi with HTTPS support
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+
+# Install dependencies
+RUN npm ci
+
+# Copy all source code
+COPY . .
+
+# Generate Prisma client
+RUN npx prisma generate
+
+# Create directories
+RUN mkdir -p public/uploads certs
+
+# Copy certificates if they exist
+COPY certs/ ./certs/ 2>/dev/null || true
+
+# Expose both HTTP and HTTPS ports
+EXPOSE 3000
+EXPOSE 3443
+
+# Start with HTTPS if certificates exist, otherwise fallback to HTTP
+CMD ["sh", "-c", "npx prisma migrate deploy && if [ -f ./certs/cert.pem ] && [ -f ./certs/key.pem ]; then echo 'Starting with HTTPS...'; node ./https-server.js; else echo 'Starting with HTTP...'; npm run dev; fi"]

@@ -1,0 +1,18 @@
+services:
+  box-tracker-stage:
+    build:
+      context: .
+      dockerfile: Dockerfile.stage
+    ports:
+      - "3001:3000"     # HTTP fallback
+      - "3443:3443"     # HTTPS with camera support
+    volumes:
+      - ./prisma:/app/prisma
+      - ./public/uploads:/app/public/uploads
+      - ./stage-data:/app/data
+      - ./certs:/app/certs:ro  # Mount certificates read-only
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=file:./data/dev.db
+      - HTTPS_PORT=3443
+    restart: unless-stopped
