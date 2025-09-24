@@ -7,6 +7,14 @@ datasource db {
   url      = "file:./dev.db"
 }
 
+model User {
+  id        Int      @id @default(autoincrement())
+  username  String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 model Box {
   id             Int      @id @default(autoincrement())
   boxNumber      String   @unique
