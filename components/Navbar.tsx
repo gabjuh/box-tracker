@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import QRScannerModal from './QRScannerModal';
 import { useSearch } from '@/contexts/SearchContext';
 
@@ -10,9 +10,20 @@ export default function Navbar() {
   const [isQRScannerOpen, setIsQRScannerOpen] = useState(false);
   const { searchTerm, setSearchTerm, triggerRefresh, isRefreshing } = useSearch();
   const pathname = usePathname();
-  
+  const router = useRouter();
+
   // Only show search on home page
   const showSearch = pathname === '/';
+
+  const handleLogout = async () => {
+    try {
+      await fetch('/api/auth/logout', { method: 'POST' });
+      router.push('/login');
+      router.refresh();
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+  };
 
   return (
     <>
@@ -117,13 +128,54 @@ export default function Navbar() {
                 </svg>
               </button>
               
-              <Link 
-                href="/add" 
+              <Link
+                href="/add"
                 className="flex items-center justify-center w-10 h-10 bg-blue-500 hover:bg-blue-400 rounded-lg transition-colors text-xl font-bold"
                 title="Add New Box"
               >
                 +
               </Link>
+
+              <Link
+                href="/settings"
+                className="flex items-center justify-center w-10 h-10 bg-gray-500 hover:bg-gray-400 rounded-lg transition-colors"
+                title="Settings"
+              >
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <circle cx="12" cy="12" r="3"/>
+                  <path d="M12 1v6m0 6v6m11-7h-6m-6 0H1m17-4a4 4 0 0 0-8 0m8 8a4 4 0 0 0-8 0"/>
+                </svg>
+              </Link>
+
+              <button
+                onClick={handleLogout}
+                className="flex items-center justify-center w-10 h-10 bg-red-500 hover:bg-red-400 rounded-lg transition-colors"
+                title="Logout"
+              >
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                  <polyline points="16 17 21 12 16 7"/>
+                  <line x1="21" y1="12" x2="9" y2="12"/>
+                </svg>
+              </button>
             </div>
           </div>
         </div>
