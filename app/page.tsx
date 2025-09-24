@@ -23,6 +23,7 @@ export default function Search() {
   const [pageSize, setPageSize] = useState<PageSize>(PAGE_SIZES[0]);
   const [currentPage, setCurrentPage] = useState(1);
   const [paginatedBoxes, setPaginatedBoxes] = useState<Box[]>();
+  const [isFilterVisible, setIsFilterVisible] = useState(false);
 
   const handleSort = () => {
     setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc')
@@ -159,98 +160,119 @@ export default function Search() {
   }, [filteredBoxes, pageSize, currentPage]);
 
   if (loading) {
-    return <div className="text-center py-8 text-gray-600 dark:text-gray-400">Loading boxes...</div>
+    return <div className="text-center py-8 text-gray-600 dark:text-gray-400">Kartons laden...</div>
   }
 
   return (
     <div>
       <div className="mb-6 flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Search Boxes</h1>
-        <p className="text-sm text-gray-500 dark:text-gray-400">
-          Found {filteredBoxes.length} box{filteredBoxes.length !== 1 ? 'es' : ''}
-          {searchTerm && ` matching "${searchTerm}"`}
-        </p>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Kartons Suchen</h1>
+        <div className="flex items-center gap-4">
+          <button
+            onClick={() => setIsFilterVisible(!isFilterVisible)}
+            className="flex items-center gap-2 px-3 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors text-sm font-medium"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 2v-6.586a1 1 0 00-.293-.707L3.293 7.121A1 1 0 013 6.414V4z" />
+            </svg>
+            Filter & Sortieren
+            <svg className={`w-4 h-4 transition-transform ${isFilterVisible ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            {filteredBoxes.length} Karton{filteredBoxes.length !== 1 ? 's' : ''} gefunden
+            {searchTerm && ` für "${searchTerm}"`}
+          </p>
+        </div>
       </div>
 
-      {/* Filter Controls */}
-      <div className="mb-8 bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-        <h3 className="text-sm font-bold text-gray-700 dark:text-gray-300 mb-3">Filter & Sortieren</h3>
-        
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {/* Number Range Filter */}
-          <div>
-            <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
-              Box Nummer
-            </label>
-            <input
-              type="text"
-              value={numberFilter}
-              onChange={(e) => setNumberFilter(e.target.value)}
-              placeholder="z.B. 1-100 oder 5"
-              className="w-full p-2 text-sm border border-gray-300 dark:border-gray-600 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-            />
-          </div>
+      {/* Collapsible Filter Controls */}
+      {isFilterVisible && (
+        <div className="mb-8 bg-gray-50 dark:bg-gray-800 rounded-lg p-4 border-2 border-blue-200 dark:border-blue-700">
+          <h3 className="text-sm font-bold text-gray-700 dark:text-gray-300 mb-3">Filter & Sortieren</h3>
 
-          {/* Date Filter */}
-          <div>
-            <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
-              Geändert am
-            </label>
-            <input
-              type="date"
-              value={dateFilter}
-              onChange={(e) => setDateFilter(e.target.value)}
-              className="w-full p-2 text-sm border border-gray-300 dark:border-gray-600 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-            />
-          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+            {/* Number Range Filter */}
+            <div>
+              <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+                Box Nummer
+              </label>
+              <input
+                type="text"
+                value={numberFilter}
+                onChange={(e) => setNumberFilter(e.target.value)}
+                placeholder="z.B. 1-100 oder 5"
+                className="w-full p-2 text-sm border border-gray-300 dark:border-gray-600 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              />
+            </div>
 
-          {/* Sort By */}
-          <div>
-            <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
-              Sortieren nach
-            </label>
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as 'id' | 'boxNumber' | 'updatedAt')}
-              className="w-full p-2 text-sm border border-gray-300 dark:border-gray-600 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-            >
-              <option value="updatedAt">Zuletzt bearbeitet</option>
-              <option value="boxNumber">Box Nummer</option>
-              <option value="id">Erstellungsreihenfolge</option>
-            </select>
-          </div>
+            {/* Date Filter */}
+            <div>
+              <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+                Geändert am
+              </label>
+              <input
+                type="date"
+                value={dateFilter}
+                onChange={(e) => setDateFilter(e.target.value)}
+                className="w-full p-2 text-sm border border-gray-300 dark:border-gray-600 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              />
+            </div>
 
-          {/* Sort Direction & Clear */}
-          <div>
-            <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
-              Aktionen
-            </label>
-            <div className="flex gap-2">
-              <button
-                onClick={handleSort}
-                className="flex-1 p-2 text-xs bg-blue-500 hover:bg-blue-600 text-white rounded transition-colors"
+            {/* Sort By */}
+            <div>
+              <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+                Sortieren nach
+              </label>
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value as 'id' | 'boxNumber' | 'updatedAt')}
+                className="w-full p-2 text-sm border border-gray-300 dark:border-gray-600 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               >
-                {sortOrder === 'asc' ? '↑ Aufsteigend' : '↓ Absteigend'}
-              </button>
+                <option value="updatedAt">Zuletzt bearbeitet</option>
+                <option value="boxNumber">Box Nummer</option>
+                <option value="id">Erstellungsreihenfolge</option>
+              </select>
+            </div>
+
+            {/* Sort Direction */}
+            <div>
+              <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+                Reihenfolge
+              </label>
+              <select
+                value={sortOrder}
+                onChange={(e) => setSortOrder(e.target.value as 'asc' | 'desc')}
+                className="w-full p-2 text-sm border border-gray-300 dark:border-gray-600 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              >
+                <option value="desc">↓ Absteigend</option>
+                <option value="asc">↑ Aufsteigend</option>
+              </select>
+            </div>
+
+            {/* Clear Button */}
+            <div>
+              <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+                Aktionen
+              </label>
               <button
                 onClick={() => {
                   setNumberFilter('');
                   setDateFilter('');
                   setSearchTerm('');
                 }}
-                className="px-3 py-2 text-xs bg-gray-500 hover:bg-gray-600 text-white rounded transition-colors"
+                className="w-full p-2 text-xs bg-gray-500 hover:bg-gray-600 text-white rounded transition-colors"
               >
-                Löschen
+                Alle Filter löschen
               </button>
             </div>
           </div>
         </div>
-      </div>
+      )}
 
       {/* Pagination Controls */}
       <PaginationControls
-        sortOrder={sortOrder}
-        onSort={handleSort}
         currentPage={currentPage}
         totalItems={filteredBoxes.length}
         pageSize={pageSize}
@@ -262,9 +284,9 @@ export default function Search() {
       {paginatedBoxes?.length === 0 ? (
         <div className="text-center py-8 text-gray-500 dark:text-gray-400">
           {searchTerm ? (
-            <>No boxes found matching {searchTerm}</>
+            <>Keine Kartons gefunden für {searchTerm}</>
           ) : (
-            <>No boxes yet. <a href="/add" className="text-blue-500 dark:text-blue-400 hover:underline">Add your first box</a></>
+            <>Noch keine Kartons. <a href="/add" className="text-blue-500 dark:text-blue-400 hover:underline">Ersten Karton hinzufügen</a></>
           )}
         </div>
       ) : (
@@ -282,8 +304,6 @@ export default function Search() {
 
       {/* Pagination Controls */}
       <PaginationControls
-        sortOrder={sortOrder}
-        onSort={handleSort}
         currentPage={currentPage}
         totalItems={filteredBoxes.length}
         pageSize={pageSize}

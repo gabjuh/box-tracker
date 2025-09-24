@@ -11,14 +11,14 @@ export async function middleware(request: NextRequest) {
   console.log('Middleware - Path:', request.nextUrl.pathname, 'Token exists:', !!token);
 
   // Public paths that don't require authentication
-  if (request.nextUrl.pathname.startsWith('/login')) {
-    console.log('Login path detected');
-    // If user is logged in and tries to access login, redirect to home
-    if (token && await isValidToken(token)) {
+  if (request.nextUrl.pathname.startsWith('/login') || request.nextUrl.pathname.startsWith('/moving')) {
+    console.log('Public path detected:', request.nextUrl.pathname);
+    // If user is logged in and tries to access login, redirect to home (but allow /moving for everyone)
+    if (request.nextUrl.pathname.startsWith('/login') && token && await isValidToken(token)) {
       console.log('Valid token found, redirecting to home');
       return NextResponse.redirect(new URL('/', request.url));
     }
-    console.log('No valid token, staying on login');
+    console.log('Allowing access to public path');
     return NextResponse.next();
   }
 

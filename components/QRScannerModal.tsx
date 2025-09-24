@@ -7,9 +7,10 @@ import { useEffect, useRef, useState } from 'react';
 interface QRScannerModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onScan?: (scannedValue: string) => void;
 }
 
-export default function QRScannerModal({ isOpen, onClose }: QRScannerModalProps) {
+export default function QRScannerModal({ isOpen, onClose, onScan }: QRScannerModalProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const qrScannerRef = useRef<QrScanner | null>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -220,8 +221,15 @@ export default function QRScannerModal({ isOpen, onClose }: QRScannerModalProps)
         
         timeoutRef.current = setTimeout(() => {
           stopScanning();
+
+          // If onScan callback is provided, use it instead of navigation
+          if (onScan) {
+            onScan(boxNumber);
+            return;
+          }
+
+          // Default behavior: navigate to edit/add page
           onClose();
-          
           if (existingBox) {
             // Box exists - go to edit mode
             router.push(`/edit/${existingBox.id}`);

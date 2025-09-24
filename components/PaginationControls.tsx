@@ -4,10 +4,6 @@ const PAGE_SIZES = [12, 24, 48, 'All'] as const;
 type PageSize = typeof PAGE_SIZES[number];
 
 interface PaginationControlsProps {
-  // Sort controls
-  sortOrder: 'asc' | 'desc';
-  onSort: () => void;
-  
   // Pagination controls
   currentPage: number;
   totalItems: number;
@@ -18,8 +14,6 @@ interface PaginationControlsProps {
 }
 
 export default function PaginationControls({
-  sortOrder,
-  onSort,
   currentPage,
   totalItems,
   pageSize,
@@ -38,15 +32,6 @@ export default function PaginationControls({
 
   return (
     <div className="flex flex-col md:flex-row items-center justify-between mb-12 gap-4">
-      {/* Sort Button (Left) */}
-      <button
-        type="button"
-        onClick={onSort}
-        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors w-full md:w-auto"
-      >
-        {sortOrder === 'asc' ? 'Descending' : 'Ascending'}
-      </button>
-
       {/* Pagination (Center) */}
       {pageSize !== 'All' && (
         <div className="flex items-center gap-2 justify-center w-full md:w-auto">
@@ -55,35 +40,35 @@ export default function PaginationControls({
             onClick={onPrevPage}
             disabled={currentPage === 1}
             className={`px-3 py-1 rounded ${
-              currentPage === 1 
-                ? 'bg-gray-300 dark:bg-gray-700 text-gray-500' 
+              currentPage === 1
+                ? 'bg-gray-300 dark:bg-gray-700 text-gray-500'
                 : 'bg-blue-500 text-white hover:bg-blue-600'
             }`}
           >
-            Prev
+            Zurück
           </button>
           <span className="text-gray-700 dark:text-gray-300">
-            Page {currentPage} of {totalPages}
+            Seite {currentPage} von {totalPages}
           </span>
           <button
             type="button"
             onClick={onNextPage}
             disabled={currentPage >= totalPages}
             className={`px-3 py-1 rounded ${
-              currentPage >= totalPages 
-                ? 'bg-gray-300 dark:bg-gray-700 text-gray-500' 
+              currentPage >= totalPages
+                ? 'bg-gray-300 dark:bg-gray-700 text-gray-500'
                 : 'bg-blue-500 text-white hover:bg-blue-600'
             }`}
           >
-            Next
+            Weiter
           </button>
         </div>
       )}
 
       {/* Page Size Select (Right) */}
-      <div className="w-full md:w-auto flex justify-end">
+      <div className="w-full md:w-auto flex justify-center md:justify-end">
         <label htmlFor="pageSize" className="mr-2 text-gray-700 dark:text-gray-300">
-          Boxes per page:
+          Kartons pro Seite:
         </label>
         <select
           id="pageSize"
