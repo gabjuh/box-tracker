@@ -8,7 +8,10 @@
     "start": "next start",
     "lint": "eslint",
     "backup-db": "bash backup-to-webserver.sh",
-    "optimize-images": "tsx scripts/optimize-existing-images.ts"
+    "optimize-images": "tsx scripts/optimize-existing-images.ts",
+    "deploy:stage": "bash scripts/deploy-stage.sh",
+    "deploy:prod": "bash scripts/deploy-prod.sh",
+    "deploy:backup": "bash scripts/backup-and-deploy.sh"
   },
   "dependencies": {
     "@prisma/client": "^6.15.0",
