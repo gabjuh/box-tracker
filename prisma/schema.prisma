@@ -21,7 +21,45 @@ model Box {
   images         String?  // JSON array of image paths
   items          String   // JSON string of items array
   keywords       String   // Comma-separated keywords
+  zielraum       String?  // Target room ID (references MapRoom.roomId)
+  weight         Float?   // Weight in kg (e.g., 5.45)
   mainImageIndex Int      @default(0) // Index of the main image in the images array
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
+}
+
+model MapRoom {
+  id        Int      @id @default(autoincrement())
+  roomId    String   @unique // Auto-generated from name (e.g., "wohnzimmer")
+  name      String   // Display name (e.g., "Wohnzimmer")
+  centerX   Float    // Room center X coordinate
+  centerY   Float    // Room center Y coordinate
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relationship to path points
+  pathPoints MapPathPoint[]
+}
+
+model MapPathPoint {
+  id       Int      @id @default(autoincrement())
+  roomId   String   // References MapRoom.roomId
+  x        Float    // X coordinate
+  y        Float    // Y coordinate
+  order    Int      // Order of point in path (0, 1, 2, ...)
+  createdAt DateTime @default(now())
+
+  // Relationship
+  room     MapRoom  @relation(fields: [roomId], references: [roomId], onDelete: Cascade)
+
+  @@unique([roomId, order]) // Ensure unique order per room
+}
+
+model MapEntrance {
+  id        Int      @id @default(autoincrement())
+  x         Float    // Entrance X coordinate
+  y         Float    // Entrance Y coordinate
+  isActive  Boolean  @default(true) // Allow multiple entrances, but mark one as active
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

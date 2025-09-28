@@ -31,7 +31,6 @@ export default function ImprovedBoxForm({ mode = 'add', existingBox }: ImprovedB
   const [items, setItems] = useState<BoxItem[]>([]);
   const [newItemText, setNewItemText] = useState('');
   const [selectedRoom, setSelectedRoom] = useState('');
-  const [weight, setWeight] = useState<string>(''); // Use string for input, convert to number for API
   const [existingImages, setExistingImages] = useState<string[]>([]);
   const [newImages, setNewImages] = useState<File[]>([]);
   const [removedImages, setRemovedImages] = useState<string[]>([]);
@@ -52,7 +51,6 @@ export default function ImprovedBoxForm({ mode = 'add', existingBox }: ImprovedB
         setBoxNumber(existingBox.boxNumber);
         setSelectedRoom(existingBox.keywords || '');
         setExistingKeywords(existingBox.keywords || '');
-        setWeight(existingBox.weight ? existingBox.weight.toString() : '');
 
         // Parse existing items
         if (existingBox.items) {
@@ -196,14 +194,6 @@ export default function ImprovedBoxForm({ mode = 'add', existingBox }: ImprovedB
       const itemsInBox = items.filter(item => item.inBox).map(item => item.text);
       formData.append('items', JSON.stringify(itemsInBox));
       formData.append('keywords', selectedRoom);
-
-      // Add weight if provided
-      if (weight && weight.trim() !== '') {
-        const weightValue = parseFloat(weight);
-        if (!isNaN(weightValue) && weightValue >= 0) {
-          formData.append('weight', weightValue.toString());
-        }
-      }
 
       // Add new images
       newImages.forEach(image => {
@@ -373,30 +363,6 @@ export default function ImprovedBoxForm({ mode = 'add', existingBox }: ImprovedB
                         <div className="text-sm font-medium">{room}</div>
                       </button>
                     ))}
-                  </div>
-                </div>
-
-                {/* Weight */}
-                <div>
-                  <label className="block text-sm font-bold mb-3 text-gray-700 dark:text-gray-300">
-                    Gewicht (kg)
-                  </label>
-                  <div className="relative">
-                    <input
-                      type="number"
-                      step="0.01"
-                      min="0"
-                      placeholder="z.B. 5.45"
-                      value={weight}
-                      onChange={(e) => setWeight(e.target.value)}
-                      className="w-full p-4 text-lg border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
-                    />
-                    <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
-                      <span className="text-gray-500 text-sm">⚖️</span>
-                    </div>
-                  </div>
-                  <div className="text-xs text-gray-500 mt-1">
-                    Optional: Gewicht der Box in Kilogramm
                   </div>
                 </div>
               </div>

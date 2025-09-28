@@ -98,6 +98,18 @@ export default function BoxCard({ box, searchTerm = '', maxItems = 15 }: BoxCard
             </span>
           </div>
         </div>
+
+        {/* Weight display */}
+        {box.weight && (
+          <div className="mb-3">
+            <h4 className="font-semibold text-sm text-gray-700 dark:text-gray-300 mb-2">Gewicht:</h4>
+            <div className="inline-flex items-center">
+              <span className="bg-orange-500 text-white px-3 py-1.5 rounded-full text-sm font-medium shadow-sm">
+                ⚖️ {box.weight} kg
+              </span>
+            </div>
+          </div>
+        )}
         <div className="text-xs text-gray-500 dark:text-gray-400">
           Added: {new Date(box.createdAt).toLocaleDateString()}
         </div>

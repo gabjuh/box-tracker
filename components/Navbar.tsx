@@ -180,6 +180,18 @@ export default function Navbar() {
                   </Link>
 
                   <Link
+                    href="/map"
+                    className="flex items-center justify-center w-10 h-10 bg-blue-500 hover:bg-blue-400 rounded-lg transition-colors"
+                    title="Wohnungsplan"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+                      <path d="M9 20l-5.447-2.724A1 1 0 0 1 3 16.382V5.618a1 1 0 0 1 .553-.894L9 2l6 3 5.447-2.724A1 1 0 0 1 21 3.382v10.764a1 1 0 0 1-.553.894L15 18l-6-3z"/>
+                      <polyline points="9,2 9,18"/>
+                      <polyline points="15,5 15,18"/>
+                    </svg>
+                  </Link>
+
+                  <Link
                     href="/settings"
                     className="flex items-center justify-center w-10 h-10 bg-blue-500 hover:bg-blue-400 rounded-lg transition-colors"
                     title="Einstellungen"
@@ -286,6 +298,19 @@ export default function Navbar() {
                     <path d="M12 5v14m7-7H5"/>
                   </svg>
                   <span className="font-medium">Neuen Karton Hinzufügen</span>
+                </Link>
+
+                <Link
+                  href="/map"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="w-full flex items-center space-x-3 px-4 py-3 text-left hover:bg-blue-600 dark:hover:bg-blue-800 transition-colors"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+                    <path d="M9 20l-5.447-2.724A1 1 0 0 1 3 16.382V5.618a1 1 0 0 1 .553-.894L9 2l6 3 5.447-2.724A1 1 0 0 1 21 3.382v10.764a1 1 0 0 1-.553.894L15 18l-6-3z"/>
+                    <polyline points="9,2 9,18"/>
+                    <polyline points="15,5 15,18"/>
+                  </svg>
+                  <span className="font-medium">Wohnungsplan</span>
                 </Link>
 
                 <Link

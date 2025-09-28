@@ -10,6 +10,7 @@ export default function MovingPage() {
   const [isScanResultOpen, setIsScanResultOpen] = useState(false);
   const [scannedBoxData, setScannedBoxData] = useState<{
     boxNumber: string;
+    zielraum?: string;
     roomName?: string;
     weight?: number;
     items: string;
@@ -28,9 +29,25 @@ export default function MovingPage() {
       const matchingBox = boxes.find(box => box.boxNumber === scannedValue);
 
       if (matchingBox) {
+        // Fetch room name if box has a zielraum
+        let roomName: string | undefined;
+        if (matchingBox.zielraum) {
+          try {
+            const roomResponse = await fetch(`/api/map/rooms/${matchingBox.zielraum}`);
+            if (roomResponse.ok) {
+              const roomData = await roomResponse.json();
+              roomName = roomData.name;
+            }
+          } catch (roomError) {
+            console.error('Error fetching room data:', roomError);
+            // Continue without room name
+          }
+        }
+
         setScannedBoxData({
           boxNumber: matchingBox.boxNumber,
-          roomName: undefined, // Will be added to database later
+          zielraum: matchingBox.zielraum,
+          roomName: roomName,
           weight: undefined, // Will be added to database later
           items: matchingBox.items
         });

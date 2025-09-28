@@ -35,6 +35,8 @@ export async function POST(request: NextRequest) {
     const boxNumber = formData.get('boxNumber') as string
     const items = formData.get('items') as string
     const keywords = formData.get('keywords') as string
+    const weightStr = formData.get('weight') as string
+    const weight = weightStr ? parseFloat(weightStr) : null
     const mainImageIndex = parseInt(formData.get('mainImageIndex') as string) || 0
     
     // Handle multiple images
@@ -73,6 +75,7 @@ export async function POST(request: NextRequest) {
         boxNumber,
         items,
         keywords,
+        weight,
         images: images.length > 0 ? JSON.stringify(images) : null,
         mainImageIndex
       }

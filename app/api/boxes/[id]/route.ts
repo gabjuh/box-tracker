@@ -39,6 +39,8 @@ export async function PUT(
     const boxNumber = formData.get('boxNumber') as string
     const items = formData.get('items') as string
     const keywords = formData.get('keywords') as string
+    const weightStr = formData.get('weight') as string
+    const weight = weightStr ? parseFloat(weightStr) : null
     const mainImageIndex = parseInt(formData.get('mainImageIndex') as string) || 0
     
     // Parse image management data
@@ -108,6 +110,7 @@ export async function PUT(
         boxNumber,
         items,
         keywords,
+        weight,
         images: images.length > 0 ? JSON.stringify(images) : null,
         mainImageIndex
       }
